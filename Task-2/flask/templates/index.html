@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Animal Viewer & File Analyzer</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Fjalla+One&display=swap" rel="stylesheet"></head>
+</head>
+<body>
+    <div class="container">
+        <div class="box animal-box">
+            <h2>Animal Viewer</h2>
+            <div class="animal-selector">
+                <label class="radio-container">
+                    <input type="radio" name="animal" value="cat">
+                    <span class="checkmark"></span>
+                    Cat
+                </label>
+                <label class="radio-container">
+                    <input type="radio" name="animal" value="dog">
+                    <span class="checkmark"></span>
+                    Dog
+                </label>
+                <label class="radio-container">
+                    <input type="radio" name="animal" value="elephant">
+                    <span class="checkmark"></span>
+                    Elephant
+                </label>
+            </div>
+            <div id="animal-image" class="image-container"></div>
+        </div>
+        <div class="box file-box">
+            <h2>File Analyzer</h2>
+            <div class="file-upload-container">
+                <input type="file" id="file-upload" class="file-input">
+                <label for="file-upload" class="file-label">Choose a file</label>
+                <button onclick="uploadFile()" class="upload-btn">Analyze</button>
+            </div>
+            <div id="file-info" class="file-info"></div>
+        </div>
+    </div>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
