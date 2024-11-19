@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>MNIST Training Monitor</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>MNIST Training Monitor</h1>
+        <p class="subtitle">Real-time training metrics visualization</p>
+      </div>
+
+      <div class="stats">
+        <div class="stat-box">
+          <h3>Current Epoch</h3>
+          <p id="epoch">-</p>
+        </div>
+        <div class="stat-box">
+          <h3>Current Batch</h3>
+          <p id="batch">-</p>
+        </div>
+        <div class="stat-box">
+          <h3>Current Loss</h3>
+          <p id="loss">-</p>
+        </div>
+        <div class="stat-box">
+          <h3>Current Accuracy</h3>
+          <p id="accuracy">-</p>
+        </div>
+      </div>
+
+      <div class="metrics-container">
+        <div id="metrics-plot"></div>
+      </div>
+
+      <div id="results" style="display: none">
+        <h2>Training Results</h2>
+        <img
+          src="{{ url_for('static', filename='results.png') }}"
+          alt="Training Results"
+        />
+      </div>
+    </div>
+
+    <script>
+      let layout = {
+        title: {
+          text: 'Training Metrics Over Time',
+          font: {
+            size: 24,
+            color: '#2c3e50',
+            family: 'Segoe UI, sans-serif',
+          },
+          y: 0.95
+        },
+        xaxis: {
+          title: {
+            text: 'Training Steps',
+            font: {
+              size: 14,
+              color: '#2c3e50'
+            }
+          },
+          gridcolor: '#e1e1e1',
+          zeroline: false,
+          showline: true,
+          linecolor: '#2c3e50',
+          linewidth: 1
+        },
+        yaxis: {
+          title: {
+            text: 'Loss',
+            font: {
+              size: 14,
+              color: '#3498db'
+            }
+          },
+          gridcolor: '#e1e1e1',
+          zeroline: false,
+          showline: true,
+          linecolor: '#3498db',
+          linewidth: 1
+        },
+        yaxis2: {
+          title: {
+            text: 'Accuracy (%)',
+            font: {
+              size: 14,
+              color: '#2ecc71'
+            }
+          },
+          overlaying: 'y',
+          side: 'right',
+          range: [90, 100],
+          gridcolor: '#f3f3f3',
+          zeroline: false,
+          showline: true,
+          linecolor: '#2ecc71',
+          linewidth: 1,
+          dtick: 1
+        },
+        showlegend: true,
+        legend: {
+          x: 1.05,
+          y: 1,
+          bgcolor: 'rgba(255, 255, 255, 0.9)',
+          bordercolor: '#E2E2E2',
+          borderwidth: 1,
+          font: {
+            family: 'Segoe UI, sans-serif',
+            size: 12
+          }
+        },
+        margin: {
+          r: 150,
+          t: 100,
+          b: 80,
+          l: 80
+        },
+        plot_bgcolor: 'white',
+        paper_bgcolor: 'white',
+        font: {
+          family: 'Segoe UI, sans-serif',
+          color: '#2c3e50'
+        },
+        hovermode: 'x unified',
+        hoverlabel: {
+          bgcolor: 'white',
+          font: {
+            family: 'Segoe UI, sans-serif',
+            size: 12
+          }
+        }
+      };
+
+      const createTraces = (data) => {
+        return [
+          {
+            x: Array.from({ length: data.loss_history.length }, (_, i) => i),
+            y: data.loss_history,
+            type: 'scatter',
+            mode: 'lines',
+            name: 'Loss',
+            line: { 
+              color: '#3498db',
+              width: 2.5,
+              shape: 'spline'
+            },
+            hovertemplate: 'Loss: %{y:.4f}<extra></extra>'
+          },
+          {
+            x: Array.from({ length: data.accuracy_history.length }, (_, i) => i),
+            y: data.accuracy_history,
+            type: 'scatter',
+            mode: 'lines',
+            name: 'Accuracy',
+            yaxis: 'y2',
+            line: { 
+              color: '#2ecc71',
+              width: 2.5,
+              shape: 'spline'
+            },
+            hovertemplate: 'Accuracy: %{y:.2f}%<extra></extra>'
+          }
+        ];
+      };
+
+      function updatePlot() {
+        fetch("/get_loss_history")
+          .then((response) => response.json())
+          .then((data) => {
+            const traces = createTraces(data);
+            Plotly.react("metrics-plot", traces, layout);
+          });
+      }
+
+      let lastBatch = -1;
+
+      function checkUpdate() {
+        fetch("/get_data")
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.status !== "no_data") {
+              document.getElementById("epoch").textContent = data.epoch;
+              document.getElementById("batch").textContent = data.batch;
+              document.getElementById("loss").textContent = 
+                typeof data.loss === 'number' ? data.loss.toFixed(4) : '-';
+              document.getElementById("accuracy").textContent =
+                typeof data.accuracy === 'number' ? data.accuracy.toFixed(2) + "%" : '-';
+
+              if (data.batch === lastBatch && data.batch !== 0) {
+                document.getElementById("results").style.display = "block";
+              }
+              lastBatch = data.batch;
+
+              updatePlot();
+            }
+          })
+          .catch((error) => {
+            console.error("Error fetching updates:", error);
+          });
+      }
+
+      // Initialize the plot and start updates
+      Plotly.newPlot("metrics-plot", [], layout);
+      setInterval(checkUpdate, 500);
+    </script>
+  </body>
+</html>
