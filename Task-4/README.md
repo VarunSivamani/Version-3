@@ -7,3 +7,7 @@
 - Update the train.py file to use tdqm and add logs for each step. Use batch size of 512.
 - Update the code, and also show accuracy, both in the logs as well as on the frontend.
 - Since the accuracy is in high 90s, show accuracy in such a way that we can see movements between 90-100% on the graph.
+
+# Working
+
+Refer to `HowTo.md` file on how to replicate the task in your local system.
