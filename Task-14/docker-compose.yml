@@ -1,0 +1,14 @@
+version: '1.1'
+
+services:
+  backend:
+    build:
+      context: ./backend  # Path to your backend directory
+    ports:
+      - "8000:8000"
+
+  frontend:
+    build:
+      context: ./frontend  # Path to your frontend directory
+    ports:
+      - "8501:8501"  # Update to match Streamlit's default port
