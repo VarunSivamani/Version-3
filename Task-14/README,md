@@ -1,0 +1,79 @@
+# SmolLM2 Text Generation API
+
+This project provides a FastAPI backend for text generation using the SmolLM2 model and a Streamlit frontend for user interaction.
+
+## Installation
+
+1. Clone the repository:
+   ```bash
+   git clone <repository-url>
+   cd <repository-directory>
+   ```
+
+2. Navigate to the backend directory and install the required packages:
+   ```bash
+   cd backend
+   pip install -r requirements.txt
+   ```
+
+3. Navigate to the frontend directory and install the required packages:
+   ```bash
+   cd frontend
+   pip install -r requirements.txt
+   ```
+
+## Running the Application
+
+1. Make sure Docker and Docker Compose are installed on your machine.
+
+2. From the root of the project directory, run:
+   ```bash
+   docker-compose up --build
+   ```
+
+3. Access the Streamlit frontend at `http://localhost:8501` and the FastAPI backend at `http://localhost:8000`.
+
+## API Endpoints
+
+### Generate Text
+
+- **Endpoint**: `POST /generate`
+- **Description**: Generates text based on the provided prompt.
+- **Request Body**:
+  ```json
+  {
+    "prompt": "Your input prompt here",
+    "length": 25
+  }
+  ```
+- **Response**:
+  ```json
+  {
+    "responses": ["Generated text response"]
+  }
+  ```
+
+### Fetch History
+
+- **Endpoint**: `GET /history`
+- **Description**: Retrieves the history of prompts and their generated responses.
+- **Response**:
+  ```json
+  {
+    "history": [
+      {
+        "prompt": "Your input prompt here",
+        "responses": ["Generated text response"]
+      }
+    ]
+  }
+  ```
+
+## Frontend
+
+- The frontend is built using Streamlit.
+- Users can input prompts and view generated text responses. 
+
+## License
+
+This project is licensed under the MIT License. 
